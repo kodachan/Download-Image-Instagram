@@ -10,7 +10,7 @@ TARGET_DIR="./image/"
 
 def download(url):
     file_name = os.path.basename(url)
-    res = requests.get(url, stream=True)
+    res = requests.get(url+"?_nc_ht=scontent-nrt1-1.cdninstagram.com", stream=True)
     if res.status_code == 200:
         with open(TARGET_DIR+file_name, 'wb') as file:
             res.raw.decode_content = True

@@ -4,13 +4,13 @@ import sys
 import os.path
 import pyperclip as clip
 import shutil
-from PIL import Image
+from PIL import Image #Pillow
 insta='https://www.instagram.com/'
 TARGET_DIR="./image/"
 
-def download(url):
-    file_name = os.path.basename(url)
-    res = requests.get(url+"?_nc_ht=scontent-nrt1-1.cdninstagram.com", stream=True)
+def download(url, file_name):
+    file_name = os.path.basename(file_name)
+    res = requests.get(url, stream=True)
     if res.status_code == 200:
         with open(TARGET_DIR+file_name, 'wb') as file:
             res.raw.decode_content = True
@@ -21,15 +21,17 @@ def instagram_single(url):
     fp_text = fp.text
     i=1
     while 1:
-        match=re.search(r"display_url(.+?)jpg",fp_text)
+        match = re.search(r"display_url(.+?)display_resources",fp_text)
         if match is None:
             break
-        match = match.group(1)
-        match = match[3:] + "jpg"
-        download(match)
+        match_group = match.group(1)
+        match_unicode = match_group[3:-3]
+        match = match_unicode.replace("\\u0026", "&")
+        file_name = match.split("?_nc_ht=scontent-nrt1-1")[0]
+        download(match,file_name)
         print(str(i)+":"+match)
         i=i+1
-        remove = "display_url\":\""+match
+        remove = "display_url\":\""+match_unicode+"\",\"display_resources"
         fp_text = fp_text.replace(remove,"a")
         
 def instagram_plural(url):
